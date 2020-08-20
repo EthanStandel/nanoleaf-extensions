@@ -5,6 +5,7 @@ import { PowerState } from "../models/PowerState";
 
 export namespace NanoleafApi {
 
+    // Forces type-check
     const apiDetails: NanoleafApiDetails = nanoleafApiDetails;
 
     const baseEndpoint = (): string => {
