@@ -1,5 +1,5 @@
 {
-    "name": "nanoleaf-events",
+    "name": "nanoleaf-extensions",
     "version": "0.0.1",
     "description": "A restful web service to sit in front of a Nanoleaf panel array for providing some extra features and functionalities.",
     "main": "./build/index.js",
