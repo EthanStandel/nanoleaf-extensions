@@ -1,0 +1,19 @@
+{
+    "name": "nanoleaf-events",
+    "version": "0.0.1",
+    "description": "A restful web service to sit in front of a Nanoleaf panel array for providing some extra features and functionalities.",
+    "main": "./build/index.js",
+    "scripts": {
+        "build": "./node_modules/.bin/tsc",
+        "main": "node ./build/main.js"
+    },
+    "author": "ethsta2013@gmail.com",
+    "license": "ISC",
+    "devDependencies": {
+        "@types/node": "^14.6.0",
+        "typescript": "^3.9.7"
+    },
+    "dependencies": {
+        "axios": "^0.19.2"
+    }
+}

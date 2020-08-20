@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "lib": [ "esnext" ],
+        "typeRoots": [ "./node_modules/@types" ],
+        "allowJs": true,
+        "esModuleInterop": true,
+        "strict": true,
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "jsx": "preserve",
+        "outDir": "./build",
+        "resolveJsonModule": true
+    },
+    "include": [
+        "./src/**/*"
+    ]
+}
