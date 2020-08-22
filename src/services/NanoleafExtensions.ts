@@ -3,6 +3,7 @@ import { NanoleafApi } from "./NanoleafApi";
 import { PowerState } from "../models/PowerState";
 import { State } from "../models/State";
 import { Utils } from "../utils";
+import { Colors } from "../models/Colors";
 
 export namespace NanoleafExtensions {
 
@@ -38,18 +39,6 @@ export namespace NanoleafExtensions {
         }
     }
 
-    const setGreen = async (): Promise<void> => {
-        await setState({
-            power: PowerState.On,
-            colorMode: "hs",
-            brightness: 100,
-            colorTemperature: 5000,
-            hue: 120,
-            saturation: 100,
-            effect: "*Solid*"
-        });
-    }
-
     const pulse = async (count: number): Promise<void> => {
         for (let i = 0; i < count; i++) {
             await NanoleafApi.setBrightness(1, 1);
@@ -57,6 +46,16 @@ export namespace NanoleafExtensions {
             await NanoleafApi.setBrightness(100, 1);
             await Utils.sleep(1);
         }
+    }
+
+    const flashEvent = async (
+        flashState: State,
+        flashCount: number = 3
+    ): Promise<void> => {
+        const originalState = await getState();
+        await setState(flashState);
+        await pulse(flashCount);
+        await setState(originalState);
     }
 
     export const togglePowerState = async () => {
@@ -67,11 +66,11 @@ export namespace NanoleafExtensions {
         );
     }
 
-    export const successEvent = async (): Promise<void> => {
-        const originalState = await getState();
-        await setGreen();
-        await pulse(5);
-        await setState(originalState);
+    export const successEvent = (): Promise<void> => {
+        return flashEvent(Colors.Green);
     }
 
+    export const failureEvent = (): Promise<void> => {
+        return flashEvent(Colors.Red);
+    }
 }

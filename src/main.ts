@@ -1,3 +1,10 @@
 import { NanoleafExtensions } from "./services/NanoleafExtensions";
+import { Utils } from "./utils";
 
-NanoleafExtensions.successEvent();
+const test = async () => {
+    await NanoleafExtensions.failureEvent();
+    await Utils.sleep(3);
+    await NanoleafExtensions.successEvent();
+}
+
+test();
