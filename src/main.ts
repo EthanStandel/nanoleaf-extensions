@@ -1,12 +1,3 @@
-import { NanoleafApi } from "./services/NanoleafApi";
-import { PowerState } from "./models/PowerState";
+import { NanoleafExtensions } from "./services/NanoleafExtensions";
 
-const togglePowerState = async () => {
-    const powerState = await NanoleafApi.getPowerState();
-
-    NanoleafApi.setPowerState(
-        powerState === PowerState.On ? PowerState.Off : PowerState.On
-    );
-}
-
-togglePowerState();
+NanoleafExtensions.successEvent();
