@@ -1,23 +1,35 @@
-import { AxiosResponse } from "axios";
 import { NanoleafApi } from "./NanoleafApi";
 import { PowerState } from "../models/PowerState";
 import { State } from "../models/State";
 import { Utils } from "../utils";
 import { Colors } from "../models/Colors";
+import { NanoleafApiDetails } from "../models";
 
-export namespace NanoleafExtensions {
+export class NanoleafExtensions {
 
-    const getState = async (): Promise<State> => ({
-        power: await NanoleafApi.getPowerState(),
-        colorMode: await NanoleafApi.getColorMode(),
-        effect: await NanoleafApi.getCurrentlySetEffect(),
-        brightness: await NanoleafApi.getBrightness(),
-        colorTemperature: await NanoleafApi.getColorTemperature(),
-        hue: await NanoleafApi.getHue(),
-        saturation: await NanoleafApi.getSaturation()
-    });
+    private readonly nanoleafApi: NanoleafApi;
 
-    const setState = async ({
+    public constructor(apiProvider: NanoleafApi | NanoleafApiDetails) {
+        if (apiProvider instanceof NanoleafApi) {
+            this.nanoleafApi = apiProvider;
+        } else {
+            this.nanoleafApi = new NanoleafApi(apiProvider);
+        }
+    }
+
+    public async getState(): Promise<State> {
+        return {
+            power: await this.nanoleafApi.getPowerState(),
+            colorMode: await this.nanoleafApi.getColorMode(),
+            effect: await this.nanoleafApi.getCurrentlySetEffect(),
+            brightness: await this.nanoleafApi.getBrightness(),
+            colorTemperature: await this.nanoleafApi.getColorTemperature(),
+            hue: await this.nanoleafApi.getHue(),
+            saturation: await this.nanoleafApi.getSaturation()
+        };
+    }
+
+    public async setState({
         power,
         colorMode,
         effect,
@@ -25,52 +37,52 @@ export namespace NanoleafExtensions {
         hue,
         saturation,
         brightness
-    }: State): Promise<void> => {
-        await NanoleafApi.setPowerState(power);
-        await NanoleafApi.setBrightness(brightness);
+    }: State): Promise<void> {
+        await this.nanoleafApi.setPowerState(power);
+        await this.nanoleafApi.setBrightness(brightness);
 
         if (colorMode === "effect") {
-            await NanoleafApi.setEffect(effect);
+            await this.nanoleafApi.setEffect(effect);
         } else if (colorMode === "ct") {
-            await NanoleafApi.setColorTemperature(colorTemperature);
+            await this.nanoleafApi.setColorTemperature(colorTemperature);
         } else if (colorMode === "hs") {
-            await NanoleafApi.setHue(hue);
-            await NanoleafApi.setSaturation(saturation);
+            await this.nanoleafApi.setHue(hue);
+            await this.nanoleafApi.setSaturation(saturation);
         }
     }
 
-    const pulse = async (count: number): Promise<void> => {
+    public async pulse(count: number): Promise<void> {
         for (let i = 0; i < count; i++) {
-            await NanoleafApi.setBrightness(1, 1);
+            await this.nanoleafApi.setBrightness(1, 1);
             await Utils.sleep(1);
-            await NanoleafApi.setBrightness(100, 1);
+            await this.nanoleafApi.setBrightness(100, 1);
             await Utils.sleep(1);
         }
     }
 
-    const flashEvent = async (
+    public async flashEvent(
         flashState: State,
         flashCount: number = 3
-    ): Promise<void> => {
-        const originalState = await getState();
-        await setState(flashState);
-        await pulse(flashCount);
-        await setState(originalState);
+    ): Promise<void> {
+        const originalState = await this.getState();
+        await this.setState(flashState);
+        await this.pulse(flashCount);
+        await this.setState(originalState);
     }
 
-    export const togglePowerState = async () => {
-        const powerState = await NanoleafApi.getPowerState();
+    public async togglePowerState() {
+        const powerState = await this.nanoleafApi.getPowerState();
     
-        NanoleafApi.setPowerState(
+        this.nanoleafApi.setPowerState(
             powerState === PowerState.On ? PowerState.Off : PowerState.On
         );
     }
 
-    export const successEvent = (): Promise<void> => {
-        return flashEvent(Colors.Green);
+    public successEvent(): Promise<void> {
+        return this.flashEvent(Colors.Green);
     }
 
-    export const failureEvent = (): Promise<void> => {
-        return flashEvent(Colors.Red);
+    public failureEvent(): Promise<void> {
+        return this.flashEvent(Colors.Red);
     }
 }

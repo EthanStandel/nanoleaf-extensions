@@ -10,9 +10,6 @@
         "moduleResolution": "node",
         "jsx": "preserve",
         "outDir": "./build",
-        "resolveJsonModule": true
-    },
-    "include": [
-        "./src/**/*"
-    ]
+        "declaration": true
+    }
 }

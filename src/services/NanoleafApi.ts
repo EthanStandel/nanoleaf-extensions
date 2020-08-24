@@ -1,40 +1,45 @@
 import axios, { AxiosResponse } from "axios";
-import nanoleafApiDetails from "../resources/nanoleaf-api-details.json";
 import { NanoleafApiDetails } from "../models/NanoleafApiDetails";
 import { PowerState } from "../models/PowerState";
 import { ApiState } from "../models/ApiState";
 import { ApiEffects } from "../models/ApiEffects";
 
-export namespace NanoleafApi {
+export class NanoleafApi {
+
+
 
     // as statement forces type check
-    const { address, token, port } = nanoleafApiDetails as NanoleafApiDetails;
+    private readonly baseEndpoint: string;
+    private readonly stateEndpoint: string;
+    private readonly effectsEndpoint: string;
 
-    const baseEndpoint = `http://${address}:${port}/api/v1/${token}`;
-    const stateEndpoint = `${baseEndpoint}/state`;
-    const effectsEndpoint = `${baseEndpoint}/effects`;
-
-    const setState = (state: ApiState): Promise<AxiosResponse> => {
-        return axios.put(stateEndpoint, state);
+    public constructor({ address, port, token }: NanoleafApiDetails) {
+        this.baseEndpoint = `http://${address}:${port}/api/v1/${token}`
+        this.stateEndpoint = `${this.baseEndpoint}/state`;
+        this.effectsEndpoint= `${this.baseEndpoint}/effects`
     }
 
-    const getStateDetails = async (detail: keyof ApiState | "" = ""): Promise<ApiState> => {
-        const response = await axios.get(`${stateEndpoint}/${detail}`);
+    private setState(state: ApiState): Promise<AxiosResponse> {
+        return axios.put(this.stateEndpoint, state);
+    }
+
+    private async getStateDetails(detail: keyof ApiState | "" = ""): Promise<ApiState> {
+        const response = await axios.get(`${this.stateEndpoint}/${detail}`);
         return !detail ? response.data : { [detail]: response.data };
     }
 
-    const getEffectsDetails = async (detail: keyof ApiEffects | "" = ""): Promise<ApiEffects> => {
-        const response = await axios.get(`${effectsEndpoint}/${detail}`);
+    private async getEffectsDetails(detail: keyof ApiEffects | "" = ""): Promise<ApiEffects> {
+        const response = await axios.get(`${this.effectsEndpoint}/${detail}`);
         return !detail ? response.data : { [detail]: response.data };
     }
 
-    export const setPowerState = (powerState: PowerState): Promise<AxiosResponse> => {
+    public setPowerState(powerState: PowerState): Promise<AxiosResponse> {
         const state: ApiState = { on: { value: powerState === PowerState.On } };
-        return setState(state);
+        return this.setState(state);
     }
 
-    export const getPowerState = async (): Promise<PowerState> => {
-        const state = await getStateDetails("on");
+    public async getPowerState(): Promise<PowerState> {
+        const state = await this.getStateDetails("on");
         
         if (state.on!.value) {
             return PowerState.On;
@@ -43,69 +48,69 @@ export namespace NanoleafApi {
         }
     }
 
-    export const getBrightness = async (): Promise<number> => {
-        const state = await getStateDetails("brightness");
+    public async getBrightness(): Promise<number> {
+        const state = await this.getStateDetails("brightness");
         return state.brightness!.value;
     }
 
-    export const setBrightness = (
+    public setBrightness(
         value: number,
         transitionSeconds: number = 1
-    ): Promise<AxiosResponse> => {
+    ): Promise<AxiosResponse> {
         const brightness: ApiState.Brightness = {
             value, duration: transitionSeconds
         }
         
-        return setState({ brightness });
+        return this.setState({ brightness });
     }
 
-    export const getHue = async (): Promise<number> => {
-        const state = getStateDetails("hue");
+    public async getHue(): Promise<number> {
+        const state = this.getStateDetails("hue");
         return (await state).hue!.value;
     }
 
-    export const setHue = (value: number): Promise<AxiosResponse> => {
+    public async setHue(value: number): Promise<AxiosResponse> {
         const hue: ApiState.Hue = { value };
-        return setState({ hue });
+        return this.setState({ hue });
     }
 
-    export const getSaturation = async (): Promise<number> => {
-        const state = await getStateDetails("sat");
+    public async getSaturation(): Promise<number> {
+        const state = await this.getStateDetails("sat");
         return state.sat!.value;
     }
 
-    export const setSaturation = (value: number): Promise<AxiosResponse> => {
+    public setSaturation(value: number): Promise<AxiosResponse> {
         const sat: ApiState.Saturation = { value };
-        return setState({ sat });
+        return this.setState({ sat });
     }
 
-    export const getColorTemperature = async (): Promise<number> => {
-        const state = await getStateDetails("ct");
+    public async getColorTemperature(): Promise<number> {
+        const state = await this.getStateDetails("ct");
         return state.ct!.value;
     }
 
-    export const setColorTemperature = (value: number): Promise<AxiosResponse> => {
+    public async setColorTemperature(value: number): Promise<AxiosResponse> {
         const ct: ApiState.ColorTemperature = { value };
-        return setState({ ct });
+        return this.setState({ ct });
     }
 
-    export const getColorMode = async (): Promise<ApiState.ColorMode> => {
-        const state = await getStateDetails("colorMode");
+    public async getColorMode(): Promise<ApiState.ColorMode> {
+        const state = await this.getStateDetails("colorMode");
         return state.colorMode!;
     }
 
-    export const getCurrentlySetEffect = async (): Promise<ApiEffects.Select> => {
-        const effects = await getEffectsDetails("select");
+    public async getCurrentlySetEffect(): Promise<ApiEffects.Select> {
+        const effects = await this.getEffectsDetails("select");
         return effects!.select!;
     }
 
-    export const getAllEffectOptions = async (): Promise<ApiEffects.List> => {
-        const effects = await getEffectsDetails("effectsList");
+    public async getAllEffectOptions(): Promise<ApiEffects.List> {
+        const effects = await this.getEffectsDetails("effectsList");
         return effects.effectsList!;
     }
 
-    export const setEffect = (select: ApiEffects.Select): Promise<AxiosResponse> => {
-        return axios.put(effectsEndpoint, { select });
+    public setEffect(select: ApiEffects.Select): Promise<AxiosResponse> {
+        return axios.put(this.effectsEndpoint, { select });
     }
 
 }

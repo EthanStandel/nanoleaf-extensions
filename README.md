@@ -1,1 +1,1 @@
-Make sure to add your own API details file in src/resources/nanoleaf-api-details.json before compiling!  The object model should follow the type defined in src/models/NanoleafApiDetails.ts.
+Make sure to add your own API details file in src/resources/nanoleaf-api-details.json before compiling with build:tests!  The object model should follow the type defined in src/models/NanoleafApiDetails.ts.  If you're not running tests and only implementing the library, you can provide this model to the service classes at instance construction time.

@@ -4,8 +4,9 @@
     "description": "A restful web service to sit in front of a Nanoleaf panel array for providing some extra features and functionalities.",
     "main": "./build/index.js",
     "scripts": {
-        "build": "./node_modules/.bin/tsc",
-        "main": "node ./build/main.js"
+        "build:exports": "./node_modules/.bin/tsc --project ./tsconfig.exports.json",
+        "build:tests": "./node_modules/.bin/tsc --project ./tsconfig.tests.json",
+        "tests": "node ./build/tests/flashingTest.js"
     },
     "author": "ethsta2013@gmail.com",
     "license": "ISC",
