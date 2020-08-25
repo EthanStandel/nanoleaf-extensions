@@ -5,6 +5,7 @@
     "main": "./build/index.js",
     "scripts": {
         "build:exports": "./node_modules/.bin/tsc --project ./tsconfig.exports.json",
+        "postbuild:exports": "./node_modules/.bin/copyfiles package.json build",
         "build:tests": "./node_modules/.bin/tsc --project ./tsconfig.tests.json",
         "tests": "node ./build/tests/flashingTest.js"
     },
@@ -12,6 +13,7 @@
     "license": "ISC",
     "devDependencies": {
         "@types/node": "^14.6.0",
+        "copyfiles": "^2.3.0",
         "typescript": "^3.9.7"
     },
     "dependencies": {
