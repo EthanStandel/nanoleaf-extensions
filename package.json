@@ -1,19 +1,26 @@
 {
     "name": "nanoleaf-extensions",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "A restful web service to sit in front of a Nanoleaf panel array for providing some extra features and functionalities.",
-    "main": "./build/index.js",
+    "main": "./index.js",
     "scripts": {
+        "prebuild:exports": "./node_modules/.bin/rimraf build",
         "build:exports": "./node_modules/.bin/tsc --project ./tsconfig.exports.json",
-        "postbuild:exports": "./node_modules/.bin/copyfiles package.json build",
+        "postbuild:exports": "./node_modules/.bin/copyfiles package.json README.md build",
+        "prebuild:tests": "./node_modules/.bin/rimraf build",
         "build:tests": "./node_modules/.bin/tsc --project ./tsconfig.tests.json",
         "tests": "node ./build/tests/flashingTest.js"
     },
     "author": "ethsta2013@gmail.com",
     "license": "ISC",
+    "repository": {
+        "type" : "git",
+        "url" : "https://github.com/EthanStandel/nanoleaf-extensions"
+    },
     "devDependencies": {
         "@types/node": "^14.6.0",
         "copyfiles": "^2.3.0",
+        "rimraf": "^3.0.2",
         "typescript": "^3.9.7"
     },
     "dependencies": {
