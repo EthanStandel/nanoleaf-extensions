@@ -4,19 +4,27 @@ export namespace Utils {
         return new Promise(resolve => setTimeout(resolve, seconds * 1000));
     }
 
-    export const asyncRepeater = async (
-        asyncFunction: () => Promise<void>,
+    export const asyncRepeater = async<T> (
+        asyncFunction: () => Promise<T>,
         repetitions: number
-    ): Promise<void> => {
-        await Array.from({ length: repetitions })
-            .map(() => asyncFunction)
+    ): Promise<T> => {
+        const asyncFunctions = Array.from({ length: repetitions })
+            .map(() => asyncFunction);
+
+        return synchronouslyAwaitAsyncFunctions(asyncFunctions);
+    }
+
+    export const synchronouslyAwaitAsyncFunctions = async<T> (
+        asyncFunctions: Array<() => Promise<T>>
+    ): Promise<T> => {
+        return await asyncFunctions
             .reduce(async (
-                previousPromise: Promise<void>,
-                nextAsyncFunction: () => Promise<void>
-            ): Promise<void> => {
+                previousPromise: Promise<T>,
+                nextAsyncFunction: () => Promise<T>
+            ): Promise<T> => {
                 await previousPromise;
-                await nextAsyncFunction();
-            }, Promise.resolve());
+                return await nextAsyncFunction();
+            }, Promise.resolve(undefined as any as T));
     }
 
 }
