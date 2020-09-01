@@ -52,12 +52,12 @@ export class NanoleafExtensions {
     }
 
     public async pulse(count: number): Promise<void> {
-        for (let i = 0; i < count; i++) {
+        await Utils.asyncRepeater(async (): Promise<void> => {
             await this.nanoleafApi.setBrightness(1, 1);
             await Utils.sleep(1);
             await this.nanoleafApi.setBrightness(100, 1);
             await Utils.sleep(1);
-        }
+        }, count);
     }
 
     public async flashEvent(
